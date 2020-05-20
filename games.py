@@ -55,8 +55,8 @@ def cards(bet):
     return bet*result[1]
 
 def roulette(choice, bet):
-    wheel = [(str(i), 'Even' if i % 2 == 0 else 'Odd') for i in range(1, 37)]
-            + [('0', ''), ('00', '')]
+    type = lambda i: 'Even' if i % 2 == 0 else 'Odd'
+    wheel = [(str(i), type(i)) for i in range(1, 37)] + [('0', ''), ('00', '')]
     num = random.choice(wheel)
     if num[0] == choice:
         result = ('won', 35)
