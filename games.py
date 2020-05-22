@@ -46,9 +46,10 @@ class Player:
     def roulette(self):
         choices = []
         bets = []
-        even_black = [x for x in list(range(1, 11)) + list(range(19, 29)) if x % 2 == 0]
-        odd_black = [x for x in list(range(11, 19)) + list(range(29, 37)) if x % 2 == 1]
+        even_black = [i for i in list(range(1, 11)) + list(range(19, 29)) if i % 2 == 0]
+        odd_black = [i for i in list(range(11, 19)) + list(range(29, 37)) if i % 2 == 1]
         black = even_black + odd_black
+        red = [i for i in range(1, 37) if not i in black]
         while self.current_money > sum(bets):
             if len(choices) > 0:
                 choice = choose_menu(["Add a bet", "Play"], "Choose action")
@@ -60,8 +61,8 @@ class Player:
             elif bet_type == "Even or Odd":
                 choices.append(choose_menu(["Even", "Odd"], "Choose Even or Odd"))
             elif bet_type == "Color":
-                print("Black: " + ", ".join([str(i) for i in range(1, 37) if i in black]))
-                print("Red: " + ", ".join([str(i) for i in range(1, 37) if not i in black]))
+                print("Black: " + ", ".join(map(str, black)))
+                print("Red: " + ", ".join(map(str, red)))
                 choices.append(choose_menu(["Black", "Red"], "Choose Color"))
             bets.append(self.bet(self.current_money - sum(bets)))
         print("\nYour bets:")
@@ -82,7 +83,8 @@ class Player:
                 win += bet*2
         self.game_result(win - sum(bets))
 
-    def bet(self, money):
+    @staticmethod
+    def bet(money):
         print(f"You have {money} coins")
         return get_positive("What is your bet? ", money)
 
@@ -108,8 +110,7 @@ class Player:
 
 def casino():
     print("Welcome to Greedy Goblin Casino!")
-    money = get_positive("How many coins do you have? ")
-    player = Player(money)
+    player = Player(get_positive("How many coins do you have? "))
     casino_list = ["Flip Coin", "Cho-Han", "Cards", "Roulette", "Exit Casino"]
     choice = None
     while True:
