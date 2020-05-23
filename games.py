@@ -11,36 +11,36 @@ class Player:
         sides = ["Heads", "Tails"]
         side = choose_menu(sides, "Choose Side")
         bet = self.bet(self.current_money)
-        print(f"\nYour bet: {side} - {bet}")
         case = random.choice(sides)
-        print(f"{case} is showing")
         win = 2*bet if case == side else 0
+        print(f"\nYour bet: {side} - {bet}")
+        print(f"{case} is showing")
         self.game_result(win - bet)
 
     def cho_han(self):
         var = choose_menu(["Even", "Odd"], "Choose Even or Odd")
         bet = self.bet(self.current_money)
-        print(f"\nYour bet: {var} - {bet}")
         dice = random.choices(range(1, 7), k=2)
         case = "Even" if sum(dice) % 2 == 0 else "Odd"
-        print(f"{dice[0]} and {dice[1]} are showing. Sum is {case}")
         win = 2*bet if case == var else 0
+        print(f"\nYour bet: {var} - {bet}")
+        print(f"{dice[0]} and {dice[1]} are showing. Sum is {case}")
         self.game_result(win - bet)
 
     def cards(self):
         bet = self.bet(self.current_money)
-        print(f"\nYour bet: {bet}")
         suit = list(range(2, 11)) + ["Jack", "Queen", "King", "Ace"]
-        deck = set(itertools.product(suit, ('♠', '♥', '♦', '♣')))
+        deck = set(itertools.product(suit, ("♠", "♥", "♦", "♣")))
         values = {name: score for score, name in enumerate(suit)}
         cs = random.sample(deck, 2)
-        print(f'You have "{cs[0][0]} of {cs[0][1]}" vs "{cs[1][0]} of {cs[1][1]}"')
         if values[cs[0][0]] > values[cs[1][0]]:
             win = 2*bet
         elif values[cs[0][0]] < values[cs[1][0]]:
             win = 0
         else:
             win = bet
+        print(f"\nYour bet: {bet}")
+        print(f'You have "{cs[0][0]} of {cs[0][1]}" vs "{cs[1][0]} of {cs[1][1]}"')
         self.game_result(win - bet)
 
     def roulette(self):
@@ -49,7 +49,7 @@ class Player:
         even_black = [i for i in list(range(1, 11)) + list(range(19, 29)) if i % 2 == 0]
         odd_black = [i for i in list(range(11, 19)) + list(range(29, 37)) if i % 2 == 1]
         black = even_black + odd_black
-        red = [i for i in range(1, 37) if not i in black]
+        red = [i for i in range(1, 37) if i not in black]
         while self.current_money > sum(bets):
             if len(choices) > 0:
                 choice = choose_menu(["Add a bet", "Play"], "Choose action")
@@ -65,22 +65,19 @@ class Player:
                 print("Red: " + ", ".join(map(str, red)))
                 choices.append(choose_menu(["Black", "Red"], "Choose Color"))
             bets.append(self.bet(self.current_money - sum(bets)))
+        ntype = lambda x: "Even" if x % 2 == 0 else "Odd"
+        color = lambda x: "Black" if x in black else "Red"
+        wheel = [(i, ntype(i), color(i)) for i in range(1, 37)] + [("0","",""),("00","","")]
+        num = random.choice(wheel)
+        coef = (36, 2, 2)
+        win = 0
         print("\nYour bets:")
         for choice, bet in zip(choices, bets):
             print(f"{choice} - {bet}")
-        ntype = lambda x: "Even" if x % 2 == 0 else "Odd"
-        color = lambda x: "Black" if x in black else "Red"
-        wheel = [(i, ntype(i), color(i)) for i in range(1, 37)] + [('0','',''),('00','','')]
-        num = random.choice(wheel)
+            for i in range(3):
+                if choice == num[i]:
+                    win += bet*coef[i]
         print(f"The ball is in slot: {num[0]} {num[1]} {num[2]}")
-        win = 0
-        for choice, bet in zip(choices, bets):
-            if choice == num[0]:
-                win += bet*36
-            if choice == num[1]:
-                win += bet*2
-            if choice == num[2]:
-                win += bet*2
         self.game_result(win - sum(bets))
 
     @staticmethod
@@ -144,9 +141,9 @@ def choose_menu(lst, title):
     print(f"\n{title}")
     for item in enumerate(lst):
         print(f"{item[0]} - {item[1]}")
-    choice = None
-    while not choice in map(str, range(len(lst))):
+    while True:
         choice = input("Number of your choice: ")
-    return lst[int(choice)]
+        if choice in map(str, range(len(lst))):
+            return lst[int(choice)]
 
 casino()
