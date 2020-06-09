@@ -109,7 +109,6 @@ def casino():
     print("Welcome to Greedy Goblin Casino!")
     player = Player(get_positive("How many coins do you have? "))
     casino_list = ["Flip Coin", "Cho-Han", "Cards", "Roulette", "Exit Casino"]
-    choice = None
     while True:
         choice = choose_menu(casino_list, "Choose a game")
         if choice == "Flip Coin":
