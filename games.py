@@ -1,5 +1,6 @@
 import random
-import itertools
+from itertools import product
+from collections import namedtuple
 
 class Player:
 
@@ -30,17 +31,14 @@ class Player:
     def cards(self):
         bet = self.bet(self.current_money)
         suit = list(range(2, 11)) + ["Jack", "Queen", "King", "Ace"]
-        deck = set(itertools.product(suit, ("♠", "♥", "♦", "♣")))
+        deck = set(product(suit, ("♠", "♥", "♦", "♣")))
         values = {name: score for score, name in enumerate(suit)}
-        cs = random.sample(deck, 2)
-        if values[cs[0][0]] > values[cs[1][0]]:
-            win = 2*bet
-        elif values[cs[0][0]] < values[cs[1][0]]:
-            win = 0
-        else:
-            win = bet
+        Card = namedtuple("Card", ("rank", "suit"))
+        card1, card2 = map(lambda x: Card(*x), random.sample(deck, 2))
+        cmp = lambda x, y: (x > y) - (y > x)
+        win = bet*(1 + cmp(values[card1.rank], values[card2.rank]))
         print(f"\nYour bet: {bet}")
-        print(f'You have "{cs[0][0]} of {cs[0][1]}" vs "{cs[1][0]} of {cs[1][1]}"')
+        print(f'You have "{card1.rank} of {card1.suit}" vs "{card2.rank} of {card2.suit}"')
         self.game_result(win - bet)
 
     def roulette(self):
@@ -67,7 +65,7 @@ class Player:
             bets.append(self.bet(self.current_money - sum(bets)))
         ntype = lambda x: "Even" if x % 2 == 0 else "Odd"
         color = lambda x: "Black" if x in black else "Red"
-        wheel = [(i, ntype(i), color(i)) for i in range(1, 37)] + [("0","",""),("00","","")]
+        wheel = [(i, ntype(i), color(i)) for i in range(1, 37)] + [("0", "", ""), ("00", "", "")]
         num = random.choice(wheel)
         coef = (36, 2, 2)
         win = 0
@@ -77,7 +75,7 @@ class Player:
             for i in range(3):
                 if choice == num[i]:
                     win += bet*coef[i]
-        print(f"The ball is in slot: {num[0]} {num[1]} {num[2]}")
+        print(f"The ball is in slot:", *num)
         self.game_result(win - sum(bets))
 
     @staticmethod
